@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Live Tracking - {{ app_name }}{% endblock %}
+{% block page_title %}Live Visitor Tracking{% endblock %}
+
+{% block content %}
+<div class="card content-card">
+    <div class="card-header d-flex justify-content-between">
+        <span><i class="bi bi-geo-alt text-success"></i> Currently Inside ({{ visitors|length }})</span>
+        <button class="btn btn-sm btn-outline-primary" onclick="location.reload()">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Code</th><th>Visitor</th><th>Company</th><th>Host</th>
+                    <th>Department</th><th>Badge</th><th>Check-In Time</th><th>Duration</th><th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for v in visitors %}
+            <tr>
+                <td>{{ v.visitor_code }}</td>
+                <td>{{ v.first_name }} {{ v.last_name }}</td>
+                <td>{{ v.company or '-' }}</td>
+                <td>{{ v.host_name }}</td>
+                <td>{{ v.department_name }}</td>
+                <td>{{ v.badge_number or '-' }}</td>
+                <td>{{ v.check_in_time|format_datetime }}</td>
+                <td><span class="badge bg-success">Inside</span></td>
+                <td>
+                    <a href="{{ url_for('visitors.detail', visitor_id=v.id) }}" class="btn btn-sm btn-outline-primary">View</a>
+                    {% if current_user.role in ['admin', 'receptionist'] %}
+                    <form method="POST" action="{{ url_for('visitors.check_out', visitor_id=v.id) }}" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">Check Out</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="9" class="text-center text-muted py-4">No visitors currently inside the building</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>setTimeout(() => location.reload(), 60000);</script>
+{% endblock %}

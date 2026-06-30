@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Approvals - {{ app_name }}{% endblock %}
+{% block page_title %}Pending Approvals{% endblock %}
+
+{% block content %}
+<div class="card content-card">
+    <div class="card-header">Approval Queue ({{ pending|length }})</div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr><th>Code</th><th>Visitor</th><th>Phone</th><th>Purpose</th><th>Requested</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+            {% for item in pending %}
+            <tr>
+                <td>{{ item.visitor_code }}</td>
+                <td>{{ item.first_name }} {{ item.last_name }}{% if item.company %}<br><small class="text-muted">{{ item.company }}</small>{% endif %}</td>
+                <td>{{ item.phone }}</td>
+                <td>{{ item.purpose[:50] }}{% if item.purpose|length > 50 %}...{% endif %}</td>
+                <td>{{ item.visitor_created|format_datetime if item.visitor_created else item.created_at|format_datetime }}</td>
+                <td>
+                    <a href="{{ url_for('visitors.detail', visitor_id=item.visitor_id) }}" class="btn btn-sm btn-primary">Review</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="text-center text-muted py-4">No pending approvals</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

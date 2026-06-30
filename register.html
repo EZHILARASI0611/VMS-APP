@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block title %}Register Visitor - {{ app_name }}{% endblock %}
+{% block page_title %}Register Visitor{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card content-card">
+            <div class="card-header">New Visitor Registration</div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" novalidate>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label required">First Name</label>
+                            <input type="text" class="form-control" name="first_name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label required">Last Name</label>
+                            <input type="text" class="form-control" name="last_name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label required">Phone</label>
+                            <input type="tel" class="form-control" name="phone" required pattern="[0-9+\-\s()]{7,20}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Company</label>
+                            <input type="text" class="form-control" name="company">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label required">Host Employee</label>
+                            <select class="form-select" name="host_employee_id" required>
+                                <option value="">Select host...</option>
+                                {% for emp in employees %}
+                                <option value="{{ emp.id }}">{{ emp.first_name }} {{ emp.last_name }} ({{ emp.department_name }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label required">Purpose of Visit</label>
+                            <textarea class="form-control" name="purpose" rows="2" required></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Visitor Photo</label>
+                            <input type="file" class="form-control" name="photo" id="photo" accept="image/*">
+                            <img id="photoPreview" class="upload-preview mt-2 d-none" alt="Preview">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">ID Proof</label>
+                            <input type="file" class="form-control" name="id_proof" accept="image/*,.pdf">
+                            <select class="form-select mt-2" name="id_proof_type">
+                                <option value="">ID Type...</option>
+                                <option value="Aadhaar">Aadhaar</option>
+                                <option value="PAN">PAN Card</option>
+                                <option value="Driving License">Driving License</option>
+                                <option value="Passport">Passport</option>
+                                <option value="Employee ID">Employee ID</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Notes</label>
+                            <textarea class="form-control" name="notes" rows="2"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-person-plus"></i> Register Visitor
+                            </button>
+                            <a href="{{ url_for('visitors.list_visitors') }}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}{% if employee %}Edit{% else %}Create{% endif %} Employee - {{ app_name }}{% endblock %}
+{% block page_title %}{% if employee %}Edit Employee{% else %}Create Employee{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card content-card">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label required">Employee Code</label>
+                            <input type="text" class="form-control" name="employee_code" value="{{ employee.employee_code if employee else '' }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label required">Department</label>
+                            <select class="form-select" name="department_id" required>
+                                {% for d in departments %}
+                                <option value="{{ d.id }}" {% if employee and employee.department_id == d.id %}selected{% endif %}>{{ d.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label required">First Name</label>
+                            <input type="text" class="form-control" name="first_name" value="{{ employee.first_name if employee else '' }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label required">Last Name</label>
+                            <input type="text" class="form-control" name="last_name" value="{{ employee.last_name if employee else '' }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" class="form-control" name="phone" value="{{ employee.phone if employee else '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" value="{{ employee.email if employee else '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Designation</label>
+                            <input type="text" class="form-control" name="designation" value="{{ employee.designation if employee else '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Linked User Account</label>
+                            <select class="form-select" name="user_id">
+                                <option value="">None</option>
+                                {% for u in users %}
+                                <option value="{{ u.id }}" {% if employee and employee.user_id == u.id %}selected{% endif %}>{{ u.username }} ({{ u.role }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% if employee %}
+                        <div class="col-12 form-check">
+                            <input type="checkbox" class="form-check-input" name="is_active" id="is_active" {% if employee.is_active %}checked{% endif %}>
+                            <label class="form-check-label" for="is_active">Active</label>
+                        </div>
+                        {% endif %}
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <a href="{{ url_for('admin.employees') }}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

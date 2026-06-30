@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Users - {{ app_name }}{% endblock %}
+{% block page_title %}User Management{% endblock %}
+
+{% block content %}
+<div class="card content-card">
+    <div class="card-header d-flex justify-content-between">
+        <span>System Users</span>
+        <a href="{{ url_for('admin.create_user') }}" class="btn btn-sm btn-primary"><i class="bi bi-plus"></i> Add User</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Active</th><th>Last Login</th><th>Actions</th></tr></thead>
+            <tbody>
+            {% for u in users %}
+            <tr>
+                <td>{{ u.username }}</td>
+                <td>{{ u.email }}</td>
+                <td><span class="badge bg-primary text-capitalize">{{ u.role }}</span></td>
+                <td>{% if u.is_active_user %}<span class="text-success">Yes</span>{% else %}<span class="text-danger">No</span>{% endif %}</td>
+                <td>{{ u.last_login|format_datetime }}</td>
+                <td>
+                    <a href="{{ url_for('admin.edit_user', user_id=u.id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
+                    {% if u.id != current_user.id %}
+                    <form method="POST" action="{{ url_for('admin.delete_user', user_id=u.id) }}" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" data-confirm="Deactivate this user?">Delete</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

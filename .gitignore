@@ -1,0 +1,28 @@
+# Upload directories (contents ignored except .gitkeep)
+uploads/*
+!uploads/.gitkeep
+uploads/photos/*
+!uploads/photos/.gitkeep
+uploads/id_proofs/*
+!uploads/id_proofs/.gitkeep
+qr_codes/*
+!qr_codes/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Environment
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

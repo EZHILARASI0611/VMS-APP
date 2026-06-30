@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Visitor Pass - {{ app_name }}{% endblock %}
+{% block page_title %}Visitor Pass{% endblock %}
+
+{% block content %}
+<div class="no-print mb-3 text-center">
+    <button onclick="window.print()" class="btn btn-primary"><i class="bi bi-printer"></i> Print Pass</button>
+    <a href="{{ url_for('visitors.detail', visitor_id=visitor.id) }}" class="btn btn-outline-secondary">Back</a>
+</div>
+
+<div class="visitor-pass">
+    <div class="visitor-pass-header">
+        <h5 class="mb-0"><i class="bi bi-building"></i> VISITOR PASS</h5>
+        <small>Corporate Office</small>
+    </div>
+    <div class="p-4 text-center">
+        {% if visitor.photo_path %}
+        <img src="{{ url_for('static', filename=visitor.photo_path) }}" class="visitor-pass-photo mb-3" alt="Photo">
+        {% else %}
+        <div class="visitor-pass-photo bg-light d-inline-flex align-items-center justify-content-center mb-3">
+            <i class="bi bi-person fs-1"></i>
+        </div>
+        {% endif %}
+
+        <h4>{{ visitor.first_name }} {{ visitor.last_name }}</h4>
+        {% if visitor.company %}<p class="text-muted mb-1">{{ visitor.company }}</p>{% endif %}
+        <p class="mb-1"><strong>Code:</strong> {{ visitor.visitor_code }}</p>
+        {% if visitor.badge_number %}<p class="mb-1"><strong>Badge:</strong> {{ visitor.badge_number }}</p>{% endif %}
+        <p class="mb-1"><strong>Host:</strong> {{ visitor.host_name }}</p>
+        <p class="mb-1"><strong>Dept:</strong> {{ visitor.department_name }}</p>
+        <p class="small text-muted mb-3">{{ visitor.purpose[:80] }}{% if visitor.purpose|length > 80 %}...{% endif %}</p>
+
+        {% if visitor.qr_code_path %}
+        <img src="{{ url_for('static', filename=visitor.qr_code_path) }}" class="visitor-pass-qr" alt="QR">
+        {% endif %}
+
+        <p class="small text-muted mt-3 mb-0">Valid for today only. Please wear this pass visibly.</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}{{ visitor.first_name }} {{ visitor.last_name }} - {{ app_name }}{% endblock %}
+{% block page_title %}Visitor Details{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card content-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>{{ visitor.visitor_code }}</span>
+                <span class="badge badge-status-{{ visitor.status }} fs-6">{{ visitor.status|replace('_',' ')|title }}</span>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3 text-center">
+                        {% if visitor.photo_path %}
+                        <img src="{{ url_for('static', filename=visitor.photo_path) }}" class="visitor-pass-photo" alt="Photo">
+                        {% else %}
+                        <div class="visitor-pass-photo bg-light d-inline-flex align-items-center justify-content-center">
+                            <i class="bi bi-person fs-1 text-muted"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-9">
+                        <h4>{{ visitor.first_name }} {{ visitor.last_name }}</h4>
+                        <dl class="row mb-0">
+                            <dt class="col-sm-4">Phone</dt><dd class="col-sm-8">{{ visitor.phone }}</dd>
+                            <dt class="col-sm-4">Email</dt><dd class="col-sm-8">{{ visitor.email or '-' }}</dd>
+                            <dt class="col-sm-4">Company</dt><dd class="col-sm-8">{{ visitor.company or '-' }}</dd>
+                            <dt class="col-sm-4">Purpose</dt><dd class="col-sm-8">{{ visitor.purpose }}</dd>
+                            <dt class="col-sm-4">Host</dt><dd class="col-sm-8">{{ visitor.host_name }} ({{ visitor.department_name }})</dd>
+                            <dt class="col-sm-4">Badge</dt><dd class="col-sm-8">{{ visitor.badge_number or '-' }}</dd>
+                            <dt class="col-sm-4">Check-In</dt><dd class="col-sm-8">{{ visitor.check_in_time|format_datetime }}</dd>
+                            <dt class="col-sm-4">Check-Out</dt><dd class="col-sm-8">{{ visitor.check_out_time|format_datetime }}</dd>
+                            <dt class="col-sm-4">Registered</dt><dd class="col-sm-8">{{ visitor.created_at|format_datetime }}</dd>
+                            {% if visitor.id_proof_path %}
+                            <dt class="col-sm-4">ID Proof</dt>
+                            <dd class="col-sm-8">
+                                <a href="{{ url_for('static', filename=visitor.id_proof_path) }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                    <i class="bi bi-file-earmark"></i> View ({{ visitor.id_proof_type or 'Document' }})
+                                </a>
+                            </dd>
+                            {% endif %}
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if approval %}
+        <div class="card content-card mt-3">
+            <div class="card-header">Approval Status</div>
+            <div class="card-body">
+                <p><strong>Status:</strong> {{ approval.status|title }}</p>
+                {% if approval.comments %}<p><strong>Comments:</strong> {{ approval.comments }}</p>{% endif %}
+                {% if approval.approved_at %}<p><strong>Date:</strong> {{ approval.approved_at|format_datetime }}</p>{% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card content-card">
+            <div class="card-header">Actions</div>
+            <div class="card-body d-grid gap-2">
+                {% if visitor.status == 'pending' and current_user.role in ['admin', 'employee'] %}
+                <form method="POST" action="{{ url_for('visitors.approve', visitor_id=visitor.id) }}">
+                    <div class="mb-2"><input type="text" class="form-control form-control-sm" name="comments" placeholder="Approval comments"></div>
+                    <button type="submit" class="btn btn-success w-100"><i class="bi bi-check-lg"></i> Approve</button>
+                </form>
+                <form method="POST" action="{{ url_for('visitors.reject', visitor_id=visitor.id) }}">
+                    <div class="mb-2"><input type="text" class="form-control form-control-sm" name="comments" placeholder="Rejection reason"></div>
+                    <button type="submit" class="btn btn-danger w-100"><i class="bi bi-x-lg"></i> Reject</button>
+                </form>
+                {% endif %}
+
+                {% if visitor.status == 'approved' and current_user.role in ['admin', 'receptionist'] %}
+                <form method="POST" action="{{ url_for('visitors.check_in', visitor_id=visitor.id) }}">
+                    <input type="text" class="form-control form-control-sm mb-2" name="badge_number" placeholder="Badge number (optional)">
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-door-open"></i> Check In</button>
+                </form>
+                {% endif %}
+
+                {% if visitor.status == 'checked_in' and current_user.role in ['admin', 'receptionist'] %}
+                <form method="POST" action="{{ url_for('visitors.check_out', visitor_id=visitor.id) }}">
+                    <button type="submit" class="btn btn-secondary w-100"><i class="bi bi-door-closed"></i> Check Out</button>
+                </form>
+                {% endif %}
+
+                {% if visitor.status in ['approved', 'checked_in'] and visitor.qr_code_path %}
+                <a href="{{ url_for('visitors.visitor_pass', visitor_id=visitor.id) }}" class="btn btn-outline-primary">
+                    <i class="bi bi-qr-code"></i> View Pass
+                </a>
+                {% endif %}
+
+                <a href="{{ url_for('visitors.list_visitors') }}" class="btn btn-outline-secondary">Back to List</a>
+            </div>
+        </div>
+
+        {% if visitor.qr_code_path %}
+        <div class="card content-card mt-3 text-center">
+            <div class="card-header">QR Pass</div>
+            <div class="card-body">
+                <img src="{{ url_for('static', filename=visitor.qr_code_path) }}" class="visitor-pass-qr" alt="QR Code">
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
